@@ -1,0 +1,29 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_LayoutNoHeader";
+}
+
+<div class="d-flex justify-content-center align-items-center p-4 bg-white rounded shadow">
+    <form method="post">
+
+        <h2 class="text-center mb-3">Iniciar Sesión</h2>
+
+        <div class="mb-3">
+            <input type="text" name="Email" class="form-control" placeholder="Correo" />
+        </div>
+
+        <div class="mb-3">
+            <input type="password" name="Password" class="form-control" placeholder="Contraseña" />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mb-3">
+            Entrar
+        </button>
+
+        <a asp-page="/Signup"
+           class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Crear Cuenta</a>
+
+    </form>
+</div>

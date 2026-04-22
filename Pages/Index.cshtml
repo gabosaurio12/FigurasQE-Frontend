@@ -1,0 +1,18 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Página Principal";
+    Layout = "_LayoutNoHeader";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Figuras Que Enseñan</h1>
+</div>
+
+<div class="d-grid gap-2 col-3 mx-auto">
+    <button type="button" class="btn btn-success btn-lg">Jugar como invitado</button>
+
+    <div class="d-grid gap-2 col-6 mx-auto">
+        <a class="btn btn-primary" asp-page="/Login">Iniciar Sesión</a>
+    </div>
+</div>
