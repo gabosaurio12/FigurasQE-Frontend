@@ -32,6 +32,6 @@ public class LoginModel : PageModel
             new { Email, Password }
         );
 
-        Console.WriteLine(response);
+        Console.WriteLine(response); // se va
     }
 }
