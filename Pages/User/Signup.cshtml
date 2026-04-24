@@ -1,0 +1,168 @@
+@page
+@model SignupModel
+@{
+    ViewData["Title"] = "Signup";
+    Layout = "_LayoutNoHeader";
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const range = document.getElementById('age');
+            const output = document.getElementById('ageLabel');
+
+            const updateAge = () => {
+                output.textContent = range.value + " Años";
+            };
+
+            updateAge();
+            range.addEventListener('input', updateAge);
+
+
+            const neuroContainer = document.getElementById('neuroContainer');
+            const gradeContainer = document.getElementById('gradeContainer');
+
+            const roleRadios = document.querySelectorAll('input[name="Input.Role"]');
+
+            const toggleRoleFields = () => {
+                const selected = document.querySelector('input[name="Input.Role"]:checked')?.value;
+
+                if (selected === "tutor") {
+                    neuroContainer.classList.add('d-none');
+                    gradeContainer.classList.remove('d-none');
+                } else {
+                    neuroContainer.classList.remove('d-none');
+                    gradeContainer.classList.add('d-none');
+                }
+            };
+
+            roleRadios.forEach(radio => {
+                radio.addEventListener('change', toggleRoleFields);
+            });
+
+            toggleRoleFields();
+        });
+    </script>
+}
+
+
+<section class="justify-content-center align-items-center p-4 bg-white rounded shadow">
+    <form method="post">
+
+        <h2 class="text-center mb-3">Crear Cuenta</h2>
+
+        <section class="row g-3 mb-3">
+            <section class="col-md-6">
+                <div class="p-3 bg-white rounded border border-primary">
+                    <P>Tipo de Usuario</P>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="Input.Role" id="RadioStudent"
+                               value="student" />
+                        <label class="form-check-label" for="RadioStudent">
+                            Estudiante
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="Input.Role" id="RadioTutor"
+                               value="tutor" />
+                        <label class="form-check-label" for="RadioTutor">
+                            Tutor
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="col-md-6">
+                <div class="p-3 bg-white rounded border border-primary">
+                    <p>Ingresa tu edad</p>
+                    <label asp-for="Input.AgeValue" class="form-label" id="ageLabel">@Model.Input.AgeValue</label>
+                    <input type="range" class="form-range" min=1 max=85 step="1" asp-for="Input.AgeValue" id="age" />
+                </div>
+            </section>
+
+        </section>
+
+        <section class="row g-3">
+            <div class="col-md-6">
+                <div>
+                    <label asp-for="Input.Name">Nombre</label>
+                    <input type="text" asp-for="Input.Name" class="form-control" placeholder="Son Goku" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div>
+                    <label asp-for="Input.Genre">Género</label>
+                    <select class="form-select mb-3" aria-label="Género" asp-for="Input.Genre" id="genre">
+                        <option value="">Selecciona tu género</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="O">Otro</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="row g-3">
+            <div class="col-md-6">
+                <div>
+                    <label asp-for="Input.Email">Correo</label>
+                    <input type="text" asp-for="Input.Email" class="form-control" placeholder="gatito@gmail.com" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div>
+                    <label asp-for="Input.Country">País</label>
+
+                    <select class="form-select mb-3" asp-for="Input.Country" asp-items="Model.Countries">
+                        <option selected>Selecciona un país</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div>
+                    <label asp-for="Input.Password">Contraseña</label>
+                    <input type="password" asp-for="Input.Password" class="form-control"
+                           placeholder="ContraseñaSuper_777" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div id="neuroContainer">
+                    <label asp-for="Input.Neurodivergency">Neurodivergencia</label>
+                    <input type="text" asp-for="Input.Neurodivergency" class="form-control" placeholder="TDAH" />
+                </div>
+            
+                <div id="gradeContainer" class="d-none">
+                    <label asp-for="Input.Grade">Grado</label>
+                    <select asp-for="Input.Grade" id="gradeSelect" class="form-select">
+                        <option selected>Selecciona un grado</option>
+                        <option value="licenciatura">Licenciatura</option>
+                        <option value="maestría">Maestría</option>
+                        <option value="doctorado">Doctorado</option>
+                        <option value="post-doctorado">Post Doctorado</option>
+                        <option value="padre-madre">Padre o Madre</option>
+                    </select>
+                </div>
+            </div>
+
+            
+        </section>
+
+        <button type="submit" class="btn btn-primary w-100 mb-3">
+            Entrar
+        </button>
+
+        <a asp-page="User/Login"
+               class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Iniciar
+            Sesión</a>
+
+        </form>
+    </section>
+
