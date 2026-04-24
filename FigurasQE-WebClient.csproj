@@ -7,4 +7,8 @@
     <RootNamespace>FigurasQE_WebClient</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
+  </ItemGroup>
+
 </Project>
