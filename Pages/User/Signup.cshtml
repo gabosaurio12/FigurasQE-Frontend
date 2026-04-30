@@ -6,6 +6,7 @@
 }
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
         document.addEventListener("DOMContentLoaded", () => {
 
@@ -13,15 +14,14 @@
             const output = document.getElementById('ageLabel');
 
             const updateAge = () => {
-                output.textContent = range.value + " Años";
+                output.textContent = range.value + " años";
             };
 
             updateAge();
             range.addEventListener('input', updateAge);
 
-
             const neuroContainer = document.getElementById('neuroContainer');
-            const gradeContainer = document.getElementById('gradeContainer');
+            const gradeContainer = document.getElementById('degreeContainer');
 
             const roleRadios = document.querySelectorAll('input[name="Input.Role"]');
 
@@ -29,140 +29,154 @@
                 const selected = document.querySelector('input[name="Input.Role"]:checked')?.value;
 
                 if (selected === "tutor") {
-                    neuroContainer.classList.add('d-none');
-                    gradeContainer.classList.remove('d-none');
+                    neuroContainer?.classList.add('d-none');
+                    gradeContainer?.classList.remove('d-none');
+                    range.value = 18;
+                    output.textContent = range.value + " años";
                 } else {
-                    neuroContainer.classList.remove('d-none');
-                    gradeContainer.classList.add('d-none');
+                    neuroContainer?.classList.remove('d-none');
+                    gradeContainer?.classList.add('d-none');
+                    range.value = 5;
+                    output.textContent = range.value + " años";
                 }
             };
 
-            roleRadios.forEach(radio => {
-                radio.addEventListener('change', toggleRoleFields);
-            });
-
+            roleRadios.forEach(r => r.addEventListener('change', toggleRoleFields));
             toggleRoleFields();
         });
     </script>
 }
 
+<div class="container py-5">
 
-<section class="justify-content-center align-items-center p-4 bg-white rounded shadow">
-    <form method="post">
+    <form method="post" class="bg-white p-4 p-md-5 rounded-4 shadow mx-auto" style="max-width: 720px;">
 
-        <h2 class="text-center mb-3">Crear Cuenta</h2>
+        <!-- HEADER -->
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">Crear cuenta</h1>
+            <p class="text-muted">Completa tu información para comenzar</p>
+        </div>
 
-        <section class="row g-3 mb-3">
-            <section class="col-md-6">
-                <div class="p-3 bg-white rounded border border-primary">
-                    <P>Tipo de Usuario</P>
+        <!-- ROLE + AGE -->
+        <div class="row g-4 mb-4">
 
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Input.Role" id="RadioStudent"
-                               value="student" />
-                        <label class="form-check-label" for="RadioStudent">
-                            Estudiante
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Input.Role" id="RadioTutor"
-                               value="tutor" />
-                        <label class="form-check-label" for="RadioTutor">
-                            Tutor
-                        </label>
-                    </div>
-                </div>
-            </section>
-
-            <section class="col-md-6">
-                <div class="p-3 bg-white rounded border border-primary">
-                    <p>Ingresa tu edad</p>
-                    <label asp-for="Input.AgeValue" class="form-label" id="ageLabel">@Model.Input.AgeValue</label>
-                    <input type="range" class="form-range" min=1 max=85 step="1" asp-for="Input.AgeValue" id="age" />
-                </div>
-            </section>
-
-        </section>
-
-        <section class="row g-3">
             <div class="col-md-6">
-                <div>
+                <div class="p-3 border rounded-3 h-100">
+                    <label class="form-label fw-semibold">Tipo de usuario</label>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="Input.Role" value="student"
+                               id="student" />
+                        <label class="form-check-label" for="student">Estudiante</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="Input.Role" value="tutor" id="tutor" />
+                        <label class="form-check-label" for="tutor">Tutor</label>
+                    </div>
+
+                    <span asp-validation-for="Input.Role" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="p-3 border rounded-3 h-100">
+                    <label class="form-label fw-semibold">
+                        Edad: <span id="ageLabel">@Model.Input.Age</span>
+                    </label>
+
+                    <input type="range" class="form-range" min="1" max="85" step="1" asp-for="Input.Age" id="age" />
+
+                    <span asp-validation-for="Input.Age" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAME + EMAIL -->
+        <div class="row g-3 mb-3">
+
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input asp-for="Input.Name" class="form-control" placeholder="" />
                     <label asp-for="Input.Name">Nombre</label>
-                    <input type="text" asp-for="Input.Name" class="form-control" placeholder="Son Goku" />
                 </div>
             </div>
 
             <div class="col-md-6">
-                <div>
-                    <label asp-for="Input.Genre">Género</label>
-                    <select class="form-select mb-3" aria-label="Género" asp-for="Input.Genre" id="genre">
-                        <option value="">Selecciona tu género</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
-                        <option value="O">Otro</option>
-                    </select>
-                </div>
-            </div>
-        </section>
-
-        <section class="row g-3">
-            <div class="col-md-6">
-                <div>
-                    <label asp-for="Input.Email">Correo</label>
-                    <input type="text" asp-for="Input.Email" class="form-control" placeholder="gatito@gmail.com" />
+                <div class="form-floating">
+                    <input asp-for="Input.Email" type="email" class="form-control" placeholder="" />
+                    <label asp-for=" Input.Email">Correo</label>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div>
-                    <label asp-for="Input.Country">País</label>
+        </div>
 
-                    <select class="form-select mb-3" asp-for="Input.Country" asp-items="Model.Countries">
-                        <option selected>Selecciona un país</option>
-                    </select>
-                </div>
-            </div>
-        </section>
+        <!-- COUNTRY + GENRE -->
+        <div class="row g-3 mb-3">
 
-        <section class="row g-3 mb-4">
             <div class="col-md-6">
-                <div>
-                    <label asp-for="Input.Password">Contraseña</label>
-                    <input type="password" asp-for="Input.Password" class="form-control"
-                           placeholder="ContraseñaSuper_777" />
-                </div>
+                <label class="form-label">País</label>
+                <select asp-for="Input.Country" class="form-select" asp-items="Model.Countries">
+                    <option value="">Selecciona un país</option>
+                </select>
+                <span asp-validation-for="Input.Country" class="text-danger small"></span>
             </div>
 
             <div class="col-md-6">
-                <div id="neuroContainer">
-                    <label asp-for="Input.Neurodivergency">Neurodivergencia</label>
-                    <input type="text" asp-for="Input.Neurodivergency" class="form-control" placeholder="TDAH" />
-                </div>
-            
-                <div id="gradeContainer" class="d-none">
-                    <label asp-for="Input.Grade">Grado</label>
-                    <select asp-for="Input.Grade" id="gradeSelect" class="form-select">
-                        <option selected>Selecciona un grado</option>
-                        <option value="licenciatura">Licenciatura</option>
-                        <option value="maestría">Maestría</option>
-                        <option value="doctorado">Doctorado</option>
-                        <option value="post-doctorado">Post Doctorado</option>
-                        <option value="padre-madre">Padre o Madre</option>
-                    </select>
-                </div>
+                <label class="form-label">Género</label>
+                <select asp-for="Input.Genre" class="form-select">
+                    <option value="">Selecciona</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                    <option value="O">Otro</option>
+                </select>
+                <span asp-validation-for="Input.Genre" class="text-danger small"></span>
             </div>
 
-            
-        </section>
+        </div>
 
-        <button type="submit" class="btn btn-primary w-100 mb-3">
-            Entrar
+        <!-- NEURO + DEGREE -->
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-6" id="neuroContainer">
+                <label class="form-label">Neurodivergencia</label>
+                <select asp-for="Input.Neurodivergency" class="form-select" asp-items="Model.Neurodivergencies">
+                    <option value="">Selecciona</option>
+                </select>
+                <span asp-validation-for="Input.Neurodivergency" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6 d-none" id="degreeContainer">
+                <label class="form-label">Grado académico</label>
+                <select asp-for="Input.Degree" class="form-select">
+                    <option value="">Selecciona un grado</option>
+                    <option value="licenciatura">Licenciatura</option>
+                    <option value="maestria">Maestría</option>
+                    <option value="doctorado">Doctorado</option>
+                    <option value="postdoctorado">Post Doctorado</option>
+                    <option value="padre-madre">Padre o Madre</option>
+                </select>
+                <span asp-validation-for="Input.Degree" class="text-danger small"></span>
+            </div>
+
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="form-floating mb-4">
+            <input asp-for="Input.Password" type="password" class="form-control" placeholder="" />
+            <label asp-for="Input.Password">Contraseña</label>
+        </div>
+
+        <!-- BUTTON -->
+        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+            Crear cuenta
         </button>
 
-        <a asp-page="User/Login"
-               class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Iniciar
-            Sesión</a>
+        <div class="text-center">
+            <a asp-page="/User/Login" class="text-decoration-none">
+                ¿Ya tienes cuenta? Inicia sesión
+            </a>
+        </div>
 
-        </form>
-    </section>
-
+    </form>
+</div>

@@ -10,20 +10,29 @@
 
         <h2 class="text-center mb-3">Iniciar Sesión</h2>
 
-        <div class="mb-3">
-            <input type="text" name="Email" class="form-control" placeholder="Correo" />
+        <div class="form-floating mb-3">
+            <input asp-for="Email" type="email"
+                   class="form-control @(ViewData.ModelState["Email"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                   placeholder="" />
+            <label asp-for="Email">Correo</label>
         </div>
 
-        <div class="mb-3">
-            <input type="password" name="Password" class="form-control" placeholder="Contraseña" />
+        <div class="form-floating mb-3">
+            <input asp-for="Password" type="password"
+                   class="form-control @(ViewData.ModelState["Password"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                   placeholder="" />
+            <label asp-for="Password">Contraseña</label>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 mb-3">
             Entrar
         </button>
 
-        <a asp-page="/User/Signup"
-           class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Crear Cuenta</a>
+        <div class="text-center">
+            <a asp-page="/User/Signup" class="text-decoration-none">
+                ¿No tienes una cuenta? Crea una cuenta
+            </a>
+        </div>
 
     </form>
 </div>

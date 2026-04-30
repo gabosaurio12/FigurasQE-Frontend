@@ -1,0 +1,11 @@
+﻿@page
+@model HomeModel
+@{
+    ViewData["Title"] = "Página Principal";
+    Layout = "_LayoutNoHeader";
+}
+<h1>Bienvenido @Model.StudentName</h1>
+<div class="d-grid gap-3 col-3 mx-auto">
+    <a asp-page="/Student/Profile" class="btn btn-success btn-lg">Jugar</a>
+    <a asp-page="/Student/Profile" class="btn btn-warning btn-lg">Perfil</a>
+</div>

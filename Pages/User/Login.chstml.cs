@@ -4,11 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using FigurasQE_WebClient.Models;
 
 namespace FigurasQE_WebClient.Pages.User;
 
 public class LoginModel : PageModel
 {
+    private HttpClient Client;
+    private string LoginRoute = "http://localhost:3000/auth/login";
 
     [BindProperty]
     [Required(ErrorMessage = "El correo es obligatorio")]
@@ -20,26 +24,56 @@ public class LoginModel : PageModel
     [Required(ErrorMessage = "La contraseña es obligatoria")]
     public string Password { get; set; }
 
+    public LoginModel(HttpClient client)
+    {
+        Client = client;
+    }
+
     public void OnGet()
     {
-
     }
 
     public async Task<IActionResult> OnPost()
     {
-        var client = new HttpClient();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
-        var response = await client.PostAsJsonAsync(
-            "http://localhost:3000/auth/login",
+        var response = await Client.PostAsJsonAsync(
+            LoginRoute,
             new { Email, Password }
         );
 
-        Console.WriteLine(response);
+        if (!response.IsSuccessStatusCode)
+        {
+            ModelState.AddModelError(string.Empty, "Credenciales inválidas");
+            return Page();
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+
+        if (result == null || string.IsNullOrEmpty(result.Token))
+        {
+            ModelState.AddModelError(string.Empty, "Error procesando la respuesta del servidor");
+            return Page();
+        }
+
+        await SaveTokenInCookie(result.Token);
 
         var role = await GetRole(response);
         if (Equals(role, "student"))
-            return RedirectToPage("/Student/MainPage");
-        return RedirectToPage("/Tutor/MainPage");
+            return RedirectToPage("/Student/Home");
+        return RedirectToPage("/Tutor/Home");
+    }
+
+    private async Task SaveTokenInCookie(string token)
+    {
+        Response.Cookies.Append("jwt", token, new CookieOptions
+        {
+            HttpOnly = true,
+            SameSite = SameSiteMode.Strict
+        });
     }
 
     private async Task<string> GetRole(HttpResponseMessage response)
