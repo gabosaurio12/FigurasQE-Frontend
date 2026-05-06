@@ -1,11 +1,13 @@
-using System.Diagnostics;
 using System.Text.Json;
 using FigurasQE_WebClient.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FigurasQE_WebClient.Pages.Student;
 
+[Authorize(Roles = "student")]
 public class HomeModel : PageModel
 {
     private HttpClient Client;
@@ -19,14 +21,14 @@ public class HomeModel : PageModel
         Client = http;
     }
 
-    public async Task OnGet()
+    public async Task<IActionResult> OnGet()
     {
         var token = Request.Cookies["jwt"];
 
         if (string.IsNullOrEmpty(token))
         {
             Response.Redirect("/User/Login");
-            return;
+            return Page();
         }
 
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
@@ -43,6 +45,21 @@ public class HomeModel : PageModel
         HttpContext.Session.SetString("student", JsonSerializer.Serialize(student));
 
         StudentName = student == null ? "Estudiante" : student.Name;
+
+        return Page();
+    }
+
+    public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
+    {
+        if (!context.HttpContext.Request.Cookies.ContainsKey("jwt"))
+        {
+            context.Result = new RedirectToPageResult("/User/Login");
+            return;
+        }
+
+        context.HttpContext.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        context.HttpContext.Response.Headers["Pragma"] = "no-cache";
+        context.HttpContext.Response.Headers["Expires"] = "0";
     }
 }
 

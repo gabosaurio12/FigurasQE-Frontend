@@ -1,12 +1,14 @@
 using System.Diagnostics;
 using System.Text.Json;
 using FigurasQE_WebClient.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FigurasQE_WebClient.Pages.Student;
 
+[Authorize(Roles = "student")]
 public class ProfileModel : PageModel
 {
     private HttpClient Client;

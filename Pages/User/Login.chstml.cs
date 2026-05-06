@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using FigurasQE_WebClient.Models;
+using Microsoft.AspNetCore.Authentication;
 
 namespace FigurasQE_WebClient.Pages.User;
 
@@ -47,7 +47,8 @@ public class LoginModel : PageModel
 
         if (!response.IsSuccessStatusCode)
         {
-            ModelState.AddModelError(string.Empty, "Credenciales inválidas");
+            ModelState.AddModelError(string.Empty, "Credenciales Inválidas");
+
             return Page();
         }
 
@@ -60,8 +61,19 @@ public class LoginModel : PageModel
         }
 
         await SaveTokenInCookie(result.Token);
-
         var role = await GetRole(response);
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, Email),
+            new Claim(ClaimTypes.Role, role)
+        };
+
+        var identity = new ClaimsIdentity(claims, "Cookies");
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync("Cookies", principal);
+
         if (Equals(role, "student"))
             return RedirectToPage("/Student/Home");
         return RedirectToPage("/Tutor/Home");

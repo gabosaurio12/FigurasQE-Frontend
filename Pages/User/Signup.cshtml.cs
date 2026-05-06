@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using FigurasQE_WebClient.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,12 @@ public class SignupModel : PageModel
 {
     [BindProperty]
     public SignupRequest Input { get; set; }
+
+    [BindProperty]
+    [Required(ErrorMessage = "La contraseña es obligatoria")]
+    [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
+    ErrorMessage = "Debe tener mínimo 8 caracteres, mayúscula, minúscula, número y símbolo")]
+    public string Password { get; set; }
 
     public List<SelectListItem> Countries { get; set; }
 
@@ -47,6 +54,9 @@ public class SignupModel : PageModel
     {
         Countries = GetCountries();
         Neurodivergencies = GetNeurodivergencies();
+        Input.Password = Password;
+
+        Console.WriteLine(Input.Password);
 
         if (!ModelState.IsValid)
             return Page();
@@ -58,12 +68,12 @@ public class SignupModel : PageModel
             Input
         );
 
-        // 👇 SI FALLA EL BACKEND
+        Console.WriteLine(response.StatusCode);
+
         if (!response.IsSuccessStatusCode)
         {
             var errorJson = await response.Content.ReadAsStringAsync();
 
-            // intenta leer message del JSON
             var errorMessage = "Error al registrar usuario";
 
             try

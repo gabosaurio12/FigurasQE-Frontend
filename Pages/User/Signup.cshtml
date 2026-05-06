@@ -87,8 +87,8 @@
 
                     <input type="range" class="form-range" min="1" max="85" step="1" asp-for="Input.Age" id="age" />
 
-                    <span asp-validation-for="Input.Age" class="text-danger small"></span>
                 </div>
+                <span asp-validation-for="Input.Age" class="text-danger small"></span>
             </div>
         </div>
 
@@ -100,13 +100,15 @@
                     <input asp-for="Input.Name" class="form-control" placeholder="" />
                     <label asp-for="Input.Name">Nombre</label>
                 </div>
+                <span asp-validation-for="Input.Name" class="text-danger small"></span>
             </div>
 
             <div class="col-md-6">
                 <div class="form-floating">
                     <input asp-for="Input.Email" type="email" class="form-control" placeholder="" />
-                    <label asp-for=" Input.Email">Correo</label>
+                    <label asp-for="Input.Email">Correo</label>
                 </div>
+                <span asp-validation-for="Input.Email" class="text-danger small"></span>
             </div>
 
         </div>
@@ -163,8 +165,9 @@
 
         <!-- PASSWORD -->
         <div class="form-floating mb-4">
-            <input asp-for="Input.Password" type="password" class="form-control" placeholder="" />
-            <label asp-for="Input.Password">Contraseña</label>
+            <input asp-for="Password" type="password" class="form-control" placeholder="" />
+            <label asp-for="Password">Contraseña</label>
+            <span asp-validation-for="Password" class="text-danger small"></span>
         </div>
 
         <!-- BUTTON -->

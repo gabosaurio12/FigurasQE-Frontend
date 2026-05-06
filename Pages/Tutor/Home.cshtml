@@ -1,8 +1,13 @@
 ﻿@page
-@model MainPageModel
+@model HomeModel
 @{
     ViewData["Title"] = "Página Principal";
     Layout = "_LayoutNoHeader";
 }
 
-<h1>Página de Tutor</h1>
+<h1>Bienvenido @Model.TutorName</h1>
+<div class="d-grid gap-3 col-3 mx-auto">
+    <a class="btn btn-success btn-lg">Estudiantes</a>
+    <a asp-page="/Tutor/Profile" class="btn btn-warning btn-lg">Perfil</a>
+    <a asp-page="/User/Logout" class="btn btn-outline-danger btn-lg">Cerrar Sesión</a>
+</div>

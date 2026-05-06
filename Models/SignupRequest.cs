@@ -11,8 +11,7 @@ public class SignupRequest
     [EmailAddress(ErrorMessage = "El correo no es válido")]
     public string Email { get; set; }
 
-    [Required(ErrorMessage = "La contraseña es obligatoria")]
-    public string Password { get; set; }
+    public string? Password { get; set; }
 
     [Required(ErrorMessage = "Selecciona un género")]
     public string Genre { get; set; }
@@ -28,5 +27,6 @@ public class SignupRequest
     public string Role { get; set; }
 
     public string? Neurodivergency { get; set; }
+
     public string? Degree { get; set; }
 }
