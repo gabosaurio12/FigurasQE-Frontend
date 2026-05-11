@@ -15,7 +15,7 @@ public class TutorDto
 
     public string? Country { get; set; }
 
-    public string? Grade { get; set; }
+    public string? Degree { get; set; }
 
     public string? Email { get; set; }
 }
