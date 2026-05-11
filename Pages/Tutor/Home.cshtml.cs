@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text.Json;
 using FigurasQE_WebClient.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -5,14 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-
 namespace FigurasQE_WebClient.Pages.Tutor;
 
-[Authorize(Roles = "tutor")]
+[AllowAnonymous]
 public class HomeModel : PageModel
 {
     private HttpClient Client;
-    private string TutorRoute = "http://localhost:3000/data/students/";
+    private string TutorRoute = "http://localhost:3000/data/tutors/";
 
     [BindProperty]
     public string TutorName { get; set; }
@@ -24,41 +24,37 @@ public class HomeModel : PageModel
 
     public async Task<IActionResult> OnGet()
     {
-        var token = Request.Cookies["jwt"];
+        var token = User.FindFirst("jwt_token")?.Value;
+        var userId = User.FindFirst("sub")?.Value;
 
-        if (string.IsNullOrEmpty(token))
-        {
-            Response.Redirect("/User/Login");
-            return Page();
-        }
+        if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(userId))
+            return RedirectToPage("/User/Login");
 
-        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(token);
-        var userId = jwt.Claims.First(c => c.Type == "sub").Value;
-
-        Client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-        var tutor = await Client.GetFromJsonAsync<StudentDto>(
-            TutorRoute + userId
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"{TutorRoute}{userId}"
         );
+
+        request.Headers.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await Client.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+            return RedirectToPage("/User/Login");
+
+        var tutor = await response.Content.ReadFromJsonAsync<TutorDto>();
 
         HttpContext.Session.SetString("tutor", JsonSerializer.Serialize(tutor));
 
-        TutorName = tutor == null ? "Tutor" : tutor.Name;
+        TutorName = tutor?.Name ?? "Tutor";
 
         return Page();
     }
 
     public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
     {
-        if (!context.HttpContext.Request.Cookies.ContainsKey("jwt"))
-        {
-            context.Result = new RedirectToPageResult("/User/Login");
-            return;
-        }
-
-        context.HttpContext.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        context.HttpContext.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
         context.HttpContext.Response.Headers["Pragma"] = "no-cache";
         context.HttpContext.Response.Headers["Expires"] = "0";
     }

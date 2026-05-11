@@ -14,7 +14,7 @@ public class SignupRequest
     public string? Password { get; set; }
 
     [Required(ErrorMessage = "Selecciona un género")]
-    public string Genre { get; set; }
+    public string Gender { get; set; }
 
     [Required(ErrorMessage = "Selecciona un país")]
     public string Country { get; set; }
@@ -28,5 +28,5 @@ public class SignupRequest
 
     public string? Neurodivergency { get; set; }
 
-    public string? Degree { get; set; }
+    public string? Grade { get; set; }
 }

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using FigurasQE_WebClient.Models;
@@ -8,20 +7,21 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace FigurasQE_WebClient.Pages.Student;
+namespace FigurasQE_WebClient.Pages.Tutor;
 
-[Authorize(Roles = "student")]
+[Authorize(Roles = "tutor")] // fix - revisar que sí se pueda entrar siempre con login
+// corregir dto del back
 public class ProfileModel : PageModel
 {
     private HttpClient Client;
-    private string StudentRoute = "http://localhost:3000/data/students/";
+    private string TutorRoute = "http://localhost:3000/data/tutors/";
 
     [BindProperty]
-    public StudentDto Student { get; set; } = new();
+    public TutorDto Tutor { get; set; } = new();
 
-    public List<SelectListItem> Genders { get; set; }
+    public List<SelectListItem> Genres { get; set; }
     public List<SelectListItem> Countries { get; set; }
-    public List<SelectListItem> Neurodivergencies { get; set; }
+    public List<SelectListItem> Grades { get; set; }
 
     public string? ErrorMessage { get; set; }
     public string? SuccessMessage { get; set; }
@@ -33,29 +33,28 @@ public class ProfileModel : PageModel
 
     private void InitSelects()
     {
-        Genders =
-        [
-            new SelectListItem("Masculino", "M"),
-            new SelectListItem("Femenino", "F"),
-            new SelectListItem("Otro", "O")
-        ];
+        Genres = new()
+        {
+            new("Masculino", "M"),
+            new("Femenino", "F"),
+            new("Otro", "O")
+        };
 
-        Countries =
-        [
+        Countries = new()
+        {
             new("México", "MX"),
             new("Estados Unidos", "US"),
             new("España", "ES")
-        ];
+        };
 
-        Neurodivergencies =
-        [
-            new("Autismo", "autismo"),
-            new("TDA", "tda"),
-            new("TDAH", "tdah"),
-            new("Hiperactividad", "hiperactividad"),
-            new("Ninguna", "ninguna"),
-            new("Otra", "otra")
-        ];
+        Grades = new()
+        {
+            new("Licenciatura", "licenciatura"),
+            new("Maestría", "maestria"),
+            new("Doctorado", "doctorado"),
+            new("Post Doctorado", "postdoctorado"),
+            new("Padre o Madre", "padre-madre"),
+        };
     }
 
     public async Task<IActionResult> OnGet()
@@ -70,7 +69,7 @@ public class ProfileModel : PageModel
 
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            $"{StudentRoute}{userId}"
+            $"{TutorRoute}{userId}"
         );
 
         request.Headers.Authorization =
@@ -84,8 +83,8 @@ public class ProfileModel : PageModel
             return Page();
         }
 
-        var student = await response.Content.ReadFromJsonAsync<StudentDto>();
-        Student = student ?? new StudentDto();
+        var tutor = await response.Content.ReadFromJsonAsync<TutorDto>();
+        Tutor = tutor ?? new TutorDto();
 
         return Page();
     }
@@ -107,11 +106,11 @@ public class ProfileModel : PageModel
 
         var request = new HttpRequestMessage(
             HttpMethod.Put,
-            $"{StudentRoute}{Student.IdStudent}"
+            $"{TutorRoute}{Tutor.IdTutor}"
         );
 
         request.Content = new StringContent(
-            JsonSerializer.Serialize(Student),
+            JsonSerializer.Serialize(Tutor),
             System.Text.Encoding.UTF8,
             "application/json"
         );
@@ -127,9 +126,9 @@ public class ProfileModel : PageModel
             return Page();
         }
 
-        var updated = await response.Content.ReadFromJsonAsync<StudentDto>();
+        var updated = await response.Content.ReadFromJsonAsync<TutorDto>();
         if (updated != null)
-            Student = updated;
+            Tutor = updated;
 
         SuccessMessage = "Perfil actualizado correctamente";
 

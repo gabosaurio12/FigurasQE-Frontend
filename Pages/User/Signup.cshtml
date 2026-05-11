@@ -5,51 +5,14 @@
     Layout = "_LayoutNoHeader";
 }
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
 
-            const range = document.getElementById('age');
-            const output = document.getElementById('ageLabel');
+<div class=" container py-3">
 
-            const updateAge = () => {
-                output.textContent = range.value + " años";
-            };
+    <div class="text-center mb-4">
+        <a asp-page="/Index" class="link-dark display-4 link-offset-2 link-underline link-underline-opacity-0" ">Figuras Que Enseñan</a>
+    </div>
 
-            updateAge();
-            range.addEventListener('input', updateAge);
-
-            const neuroContainer = document.getElementById('neuroContainer');
-            const gradeContainer = document.getElementById('degreeContainer');
-
-            const roleRadios = document.querySelectorAll('input[name="Input.Role"]');
-
-            const toggleRoleFields = () => {
-                const selected = document.querySelector('input[name="Input.Role"]:checked')?.value;
-
-                if (selected === "tutor") {
-                    neuroContainer?.classList.add('d-none');
-                    gradeContainer?.classList.remove('d-none');
-                    range.value = 18;
-                    output.textContent = range.value + " años";
-                } else {
-                    neuroContainer?.classList.remove('d-none');
-                    gradeContainer?.classList.add('d-none');
-                    range.value = 5;
-                    output.textContent = range.value + " años";
-                }
-            };
-
-            roleRadios.forEach(r => r.addEventListener('change', toggleRoleFields));
-            toggleRoleFields();
-        });
-    </script>
-}
-
-<div class="container py-5">
-
-    <form method="post" class="bg-white p-4 p-md-5 rounded-4 shadow mx-auto" style="max-width: 720px;">
+    <form method="post" class="bg-white p-4 p-md-4 rounded-4 shadow mx-auto" style="max-width: 720px;">
 
         <!-- HEADER -->
         <div class="text-center mb-4">
@@ -71,7 +34,8 @@
                     </div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Input.Role" value="tutor" id="tutor" />
+                        <input class="form-check-input" type="radio" asp-for="Input.Role" value="tutor"
+                               id="tutor" />
                         <label class="form-check-label" for="tutor">Tutor</label>
                     </div>
 
@@ -113,7 +77,7 @@
 
         </div>
 
-        <!-- COUNTRY + GENRE -->
+        <!-- COUNTRY + GENDER -->
         <div class="row g-3 mb-3">
 
             <div class="col-md-6">
@@ -126,13 +90,13 @@
 
             <div class="col-md-6">
                 <label class="form-label">Género</label>
-                <select asp-for="Input.Genre" class="form-select">
+                <select asp-for="Input.Gender" class="form-select">
                     <option value="">Selecciona</option>
                     <option value="M">Masculino</option>
                     <option value="F">Femenino</option>
                     <option value="O">Otro</option>
                 </select>
-                <span asp-validation-for="Input.Genre" class="text-danger small"></span>
+                <span asp-validation-for="Input.Gender" class="text-danger small"></span>
             </div>
 
         </div>
@@ -150,15 +114,10 @@
 
             <div class="col-md-6 d-none" id="degreeContainer">
                 <label class="form-label">Grado académico</label>
-                <select asp-for="Input.Degree" class="form-select">
+                <select asp-for="Input.Grade" class="form-select" asp-items="Model.Grades">
                     <option value="">Selecciona un grado</option>
-                    <option value="licenciatura">Licenciatura</option>
-                    <option value="maestria">Maestría</option>
-                    <option value="doctorado">Doctorado</option>
-                    <option value="postdoctorado">Post Doctorado</option>
-                    <option value="padre-madre">Padre o Madre</option>
                 </select>
-                <span asp-validation-for="Input.Degree" class="text-danger small"></span>
+                <span asp-validation-for="Input.Grade" class="text-danger small"></span>
             </div>
 
         </div>
@@ -183,3 +142,45 @@
 
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+            document.addEventListener("DOMContentLoaded", () => {
+
+                const range = document.getElementById('age');
+                const output = document.getElementById('ageLabel');
+
+                const updateAge = () => {
+                    output.textContent = range.value + " años";
+                };
+
+                updateAge();
+                range.addEventListener('input', updateAge);
+
+                const neuroContainer = document.getElementById('neuroContainer');
+                const gradeContainer = document.getElementById('degreeContainer');
+
+                const roleRadios = document.querySelectorAll('input[name="Input.Role"]');
+
+                const toggleRoleFields = () => {
+                    const selected = document.querySelector('input[name="Input.Role"]:checked')?.value;
+
+                    if (selected === "tutor") {
+                        neuroContainer?.classList.add('d-none');
+                        gradeContainer?.classList.remove('d-none');
+                        range.value = 18;
+                        output.textContent = range.value + " años";
+                    } else {
+                        neuroContainer?.classList.remove('d-none');
+                        gradeContainer?.classList.add('d-none');
+                        range.value = 5;
+                        output.textContent = range.value + " años";
+                    }
+                };
+
+                roleRadios.forEach(r => r.addEventListener('change', toggleRoleFields));
+                toggleRoleFields();
+            });
+    </script>
+}

@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text.Json;
 using FigurasQE_WebClient.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -23,41 +24,37 @@ public class HomeModel : PageModel
 
     public async Task<IActionResult> OnGet()
     {
-        var token = Request.Cookies["jwt"];
+        var token = User.FindFirst("jwt_token")?.Value;
+        var userId = User.FindFirst("sub")?.Value;
 
-        if (string.IsNullOrEmpty(token))
-        {
-            Response.Redirect("/User/Login");
-            return Page();
-        }
+        if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(userId))
+            return RedirectToPage("/User/Login");
 
-        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(token);
-        var userId = jwt.Claims.First(c => c.Type == "sub").Value;
-
-        Client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-        var student = await Client.GetFromJsonAsync<StudentDto>(
-            StudentRoute + userId
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"{StudentRoute}{userId}"
         );
+
+        request.Headers.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await Client.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+            return RedirectToPage("/User/Login");
+
+        var student = await response.Content.ReadFromJsonAsync<StudentDto>();
 
         HttpContext.Session.SetString("student", JsonSerializer.Serialize(student));
 
-        StudentName = student == null ? "Estudiante" : student.Name;
+        StudentName = student?.Name ?? "Estudiante";
 
         return Page();
     }
 
     public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
     {
-        if (!context.HttpContext.Request.Cookies.ContainsKey("jwt"))
-        {
-            context.Result = new RedirectToPageResult("/User/Login");
-            return;
-        }
-
-        context.HttpContext.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        context.HttpContext.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
         context.HttpContext.Response.Headers["Pragma"] = "no-cache";
         context.HttpContext.Response.Headers["Expires"] = "0";
     }

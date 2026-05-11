@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.IdentityModel.Tokens.Jwt;
@@ -36,9 +35,7 @@ public class LoginModel : PageModel
     public async Task<IActionResult> OnPost()
     {
         if (!ModelState.IsValid)
-        {
             return Page();
-        }
 
         var response = await Client.PostAsJsonAsync(
             LoginRoute,
@@ -48,7 +45,6 @@ public class LoginModel : PageModel
         if (!response.IsSuccessStatusCode)
         {
             ModelState.AddModelError(string.Empty, "Credenciales Inválidas");
-
             return Page();
         }
 
@@ -60,13 +56,26 @@ public class LoginModel : PageModel
             return Page();
         }
 
-        await SaveTokenInCookie(result.Token);
-        var role = await GetRole(response);
+        var handler = new JwtSecurityTokenHandler();
+        var jwt = handler.ReadJwtToken(result.Token);
+
+        var role = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value
+            ?? jwt.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+        var userId = jwt.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+
+        if (string.IsNullOrEmpty(role) || string.IsNullOrEmpty(userId))
+        {
+            ModelState.AddModelError(string.Empty, "Token inválido");
+            return Page();
+        }
 
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, Email),
-            new Claim(ClaimTypes.Role, role)
+            new Claim(ClaimTypes.Role, role),
+            new Claim("jwt_token", result.Token),
+            new Claim("sub", userId)
         };
 
         var identity = new ClaimsIdentity(claims, "Cookies");
@@ -74,36 +83,8 @@ public class LoginModel : PageModel
 
         await HttpContext.SignInAsync("Cookies", principal);
 
-        if (Equals(role, "student"))
-            return RedirectToPage("/Student/Home");
-        return RedirectToPage("/Tutor/Home");
-    }
-
-    private async Task SaveTokenInCookie(string token)
-    {
-        Response.Cookies.Append("jwt", token, new CookieOptions
-        {
-            HttpOnly = true,
-            SameSite = SameSiteMode.Strict
-        });
-    }
-
-    private async Task<string> GetRole(HttpResponseMessage response)
-    {
-        var content = await response.Content.ReadAsStringAsync();
-        var json = await response.Content.ReadAsStringAsync();
-
-        var token = System.Text.Json.JsonDocument.Parse(json)
-            .RootElement
-            .GetProperty("token")
-            .GetString();
-
-        var handler = new JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(token);
-
-        var role = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value
-                   ?? jwt.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
-
-        return role;
+        return role == "student"
+            ? RedirectToPage("/Student/Home")
+            : RedirectToPage("/Tutor/Home");
     }
 }

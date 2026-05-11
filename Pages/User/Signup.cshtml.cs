@@ -9,34 +9,49 @@ namespace FigurasQE_WebClient.Pages.User;
 
 public class SignupModel : PageModel
 {
+    private string UserRoute = "http://localhost:3000/auth/register";
+
     [BindProperty]
-    public SignupRequest Input { get; set; }
+    public SignupRequest Input { get; set; } = new SignupRequest();
 
     [BindProperty]
     [Required(ErrorMessage = "La contraseña es obligatoria")]
     [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
-    ErrorMessage = "Debe tener mínimo 8 caracteres, mayúscula, minúscula, número y símbolo")]
+    ErrorMessage = "Debe tener mínimo 8 caracteres, mayúscula, minúscula y un número")]
     public string Password { get; set; }
 
     public List<SelectListItem> Countries { get; set; }
-
-    private List<SelectListItem> GetCountries() => new()
-    {
-        new("México", "MX"),
-        new("Estados Unidos", "US"),
-        new("España", "ES")
-    };
-
     public List<SelectListItem> Neurodivergencies { get; set; }
-    private List<SelectListItem> GetNeurodivergencies() => new()
+    public List<SelectListItem> Grades { get; set; }
+
+    private void InitSelects()
     {
-        new("Autismo", "autismo"),
-        new("TDA", "tda"),
-        new("TDAH", "tdah"),
-        new("Hiperactividad", "hiperactividad"),
-        new("Ninguna", "ninguna"),
-        new("Otra", "otra")
-    };
+        Countries = new()
+        {
+            new("México", "MX"),
+            new("Estados Unidos", "US"),
+            new("España", "ES")
+        };
+
+        Neurodivergencies = new()
+        {
+            new("Autismo", "autismo"),
+            new("TDA", "tda"),
+            new("TDAH", "tdah"),
+            new("Hiperactividad", "hiperactividad"),
+            new("Ninguna", "ninguna"),
+            new("Otra", "otra")
+        };
+        
+        Grades = new()
+        {
+            new("Licenciatura", "licenciatura"),
+            new("Maestría", "maestria"),
+            new("Doctorado", "doctorado"),
+            new("Post Doctorado", "postdoctorado"),
+            new("Padre o Madre", "padre-madre"),
+        };
+    }
 
     public void OnGet()
     {
@@ -46,47 +61,35 @@ public class SignupModel : PageModel
             Role = "student",
         };
 
-        Countries = GetCountries();
-        Neurodivergencies = GetNeurodivergencies();
+        InitSelects();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        Countries = GetCountries();
-        Neurodivergencies = GetNeurodivergencies();
-        Input.Password = Password;
+        InitSelects();
 
-        Console.WriteLine(Input.Password);
 
         if (!ModelState.IsValid)
             return Page();
 
+        Input.Password = Password;
+
+        var json = System.Text.Json.JsonSerializer.Serialize(Input);
+        Console.WriteLine("INPUT JSON:");
+        Console.WriteLine(json);
+
         using var client = new HttpClient();
 
+
         var response = await client.PostAsJsonAsync(
-            "http://localhost:3000/auth/register",
+            UserRoute,
             Input
         );
-
-        Console.WriteLine(response.StatusCode);
 
         if (!response.IsSuccessStatusCode)
         {
             var errorJson = await response.Content.ReadAsStringAsync();
-
-            var errorMessage = "Error al registrar usuario";
-
-            try
-            {
-                var parsed = System.Text.Json.JsonDocument.Parse(errorJson);
-                if (parsed.RootElement.TryGetProperty("message", out var msg))
-                {
-                    errorMessage = msg.GetString() ?? errorMessage;
-                }
-            }
-            catch { }
-
-            ModelState.AddModelError(string.Empty, errorMessage);
+            ModelState.AddModelError(string.Empty, errorJson);
             return Page();
         }
 
