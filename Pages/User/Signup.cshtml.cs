@@ -22,7 +22,7 @@ public class SignupModel : PageModel
 
     public List<SelectListItem> Countries { get; set; }
     public List<SelectListItem> Neurodivergencies { get; set; }
-    public List<SelectListItem> Grades { get; set; }
+    public List<SelectListItem> Degrees { get; set; }
 
     private void InitSelects()
     {
@@ -43,7 +43,7 @@ public class SignupModel : PageModel
             new("Otra", "otra")
         };
         
-        Grades = new()
+        Degrees = new()
         {
             new("Licenciatura", "licenciatura"),
             new("Maestría", "maestria"),
