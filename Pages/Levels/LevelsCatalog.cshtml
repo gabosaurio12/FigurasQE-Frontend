@@ -1,0 +1,20 @@
+@page
+@model LevelsCatalogModel
+@{
+    ViewData["Title"] = "Niveles";
+    Layout = "_LayoutNoHeader";
+}
+
+<div class="text-center mb-4">
+    <a asp-page="/Index" class="link-dark display-4 link-offset-2 link-underline link-underline-opacity-0" ">Figuras Que Enseñan</a>
+</div>
+
+<h1>@ViewData["Title"]</h1>
+
+<a asp-page="/Levels/Level1/Level1" class="btn btn-primary">Nivel1</a>
+<a asp-page="/Levels/Level2/Level2" class="btn btn-primary">Nivel2</a>
+<a asp-page="/Levels/Level3/Level3" class="btn btn-primary">Nivel3</a>
+<a asp-page="/Levels/Level4/Level4" class="btn btn-primary">Nivel4</a>
+<a asp-page="/Levels/Level5/Level5" class="btn btn-primary">Nivel5</a>
+
+<p><br>Aquí se mostrarán los nivele y una miniatura de ellos</p>

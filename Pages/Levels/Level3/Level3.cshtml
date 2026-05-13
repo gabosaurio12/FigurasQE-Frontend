@@ -1,0 +1,42 @@
+@page
+@model Level3Model
+@{
+    ViewData["Title"] = "Nivel 1";
+    Layout = "_LayoutNoHeader";
+
+}
+
+<style>
+    body {
+        background-image: url('/img/endpage.png');
+        background-size: cover;
+        background-position: center;
+        margin-bottom: 60px;
+    }
+</style>
+
+
+<div class="text-center mb-4">
+    <a asp-page="/Levels/LevelsCatalog" class="btn btn-warning" ">Niveles</a>
+</div>
+
+<div class="d-flex" id="hands-container">
+    <div class="d-flex" id="left-hand-container">
+        <figure style="color: orange;">
+            izq 1
+        </figure>
+        <figure style="color: orange;">
+            izq 2
+        </figure>
+    </div>
+
+    <div class="d-flex" id="right-hand-container">
+        <figure style="color: orange;">
+            der 1
+        </figure>
+        <figure style="color: orange;">
+            der 2
+        </figure>
+    </div>
+</div>
+
