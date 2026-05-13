@@ -13,7 +13,7 @@ public class StudentDto
 
     public int Age { get; set; }
 
-    public char Genre { get; set; }
+    public char Gender { get; set; }
 
     public string? Country { get; set; }
 

@@ -28,5 +28,5 @@ public class SignupRequest
 
     public string? Neurodivergency { get; set; }
 
-    public string? Grade { get; set; }
+    public string? Degree { get; set; }
 }
