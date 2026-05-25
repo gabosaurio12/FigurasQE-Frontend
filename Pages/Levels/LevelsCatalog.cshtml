@@ -9,12 +9,47 @@
     <a asp-page="/Index" class="link-dark display-4 link-offset-2 link-underline link-underline-opacity-0" ">Figuras Que Enseñan</a>
 </div>
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="mb-4">@ViewData["Title"]</h1>
 
-<a asp-page="/Levels/Level1/Level1" class="btn btn-primary">Nivel1</a>
-<a asp-page="/Levels/Level2/Level2" class="btn btn-primary">Nivel2</a>
-<a asp-page="/Levels/Level3/Level3" class="btn btn-primary">Nivel3</a>
-<a asp-page="/Levels/Level4/Level4" class="btn btn-primary">Nivel4</a>
-<a asp-page="/Levels/Level5/Level5" class="btn btn-primary">Nivel5</a>
+<div class="grid-container">
+    <a asp-page="/Levels/Level1/Level1" class="cell btn btn-dark">
+        Nivel 1
+    </a>
+    <a asp-page="/Levels/Level2/Level2" class="cell btn btn-primary">
+        Nivel 2
+    </a>
+    <a asp-page="/Levels/Level3/Level3" class="cell btn btn-success">
+        Nivel 3
+    </a>
+    <a asp-page="/Levels/Level4/Level4" class="cell btn btn-info">
+        Nivel 4
+    </a>
+    <a asp-page="/Levels/Level5/Level5" class="cell btn btn-warning">
+        Nivel 5
+    </a>
+    <a asp-page="/Levels/Level6/Level6" class="cell btn btn-danger">
+        Nivel 6
+    </a>
+</div>
 
-<p><br>Aquí se mostrarán los nivele y una miniatura de ellos</p>
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .cell {
+        width: 100px;
+        height: 100px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        border-radius: 1rem;
+        font-size: 1.2rem;
+
+        transition: all 0.2s ease;
+    }
+</style>

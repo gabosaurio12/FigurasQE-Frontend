@@ -4,16 +4,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FigurasQE_WebClient.Pages;
 
-public class Level1Model : PageModel
+public class Level6Model : PageModel
 {
     public LevelAnswer Answer { get; private set; } = new LevelAnswer();
     public string NextLevelRoute { get; set; }
+
     public void OnGet()
     {
-        Answer.Left = 1;
-        Answer.Right = 1;
+        Answer.Left = 4;
+        Answer.Right = 3;
         Answer.Total = Answer.Left + Answer.Right;
-        NextLevelRoute = "/Levels/Level2/Level2";
+        NextLevelRoute = "/Levels/LevelsCatalog";
     }
 }
 

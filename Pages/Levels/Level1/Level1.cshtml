@@ -9,19 +9,31 @@
 <video id="video" autoplay playsinline muted></video>
 <canvas id="canvas" style="display: none;"></canvas>
 
-<div id="hands-container">
+<div id="counter-container" class="d-flex gap-3" style="position: relative; top: 24rem;">
+    <div id="counter-1" class="counter-circle rounded-circle bg-success-subtle"></div>
+    <div id="counter-2" class="counter-circle rounded-circle bg-success-subtle"></div>
+    <div id="counter-3" class="counter-circle rounded-circle bg-success-subtle"></div>
+</div>
 
-    <div id="left-hand-container">
+<div id="hands-container">
+    <div id="left-hand-container" class="d-flex gap-3">
         <div id="left-1" class="finger-circle rounded-circle bg-primary-subtle"></div>
     </div>
 
-    <div id="right-hand-container">
+    <div id="right-hand-container" class="d-flex gap-3">
         <div id="right-1" class="finger-circle rounded-circle bg-primary-subtle"></div>
     </div>
 </div>
 
 <div style="position: fixed; bottom: 1rem; right: 1rem;">
     <a asp-page="/Levels/LevelsCatalog" class="btn btn-primary">Niveles</a>
+</div>
+
+<div id="level-config"
+     data-next-level="@Model.NextLevelRoute"
+     data-total="@Model.Answer.Total"
+     data-left="@Model.Answer.Left"
+     data-right="@Model.Answer.Right">
 </div>
 
 <style>
@@ -62,13 +74,13 @@
 
     #left-hand-container {
         position: relative;
-        top: 14rem;
+        top: 12rem;
         left: 2rem;
     }
     
     #right-hand-container {
         position: relative;
-        top: 16rem;
+        top: 14rem;
         right: 2rem;
     }
 
@@ -86,113 +98,19 @@
             0 0 40px rgba(13,110,253,0.5);
         transform: scale(1.05);
     }
+
+    .counter-circle {
+        width: 2rem;
+        height: 2rem;
+        transition: all 0.2s ease;
+    }
+
+    .active-counter {
+        background-color: #1dfd0d !important;
+        border: 5px solid #d9ffcf;
+        box-shadow: 
+            0 0 20px rgba(13,110,253,0.7),
+            0 0 40px rgba(13,110,253,0.5);
+        transform: scale(1.05);
+    }
 </style>
-
-@section Scripts {
-    <script>
-        const apiRoute = "http://localhost:3000/hands";
-        const video = document.getElementById("video");
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-
-        const left1 = document.getElementById("left-1");
-        left1.setAttribute('data-bs-theme', 'dark');
-        const right1 = document.getElementById("right-1");
-        right1.setAttribute('data-bs-theme', 'dark');
-
-        canvas.width = 320;
-        canvas.height = 240;
-
-        let processing = false;
-        let cameraReady = false;
-
-        async function turnOnCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        width: 640,
-                        height: 480
-                    },
-                    audio: false
-                });
-
-                video.srcObject = stream;
-                video.onloadedmetadata = async () => {
-                    await video.play();
-                    cameraReady = true;
-                    console.log("Camera ready");
-                    startFramesCapture();
-                };
-            } catch (err) {
-                console.error("Camera error:", err);
-            }
-        }
-
-        function startFramesCapture() {
-            setInterval(async () => {
-                if (!cameraReady) return;
-                if (processing) return;
-                processing = true;
-                
-                try {
-                    await captureFrame();
-                } catch (err) {
-                    console.error("Frame capture error:", err);
-                } finally {
-                    processing = false;
-                }
-            }, 250);
-        }
-
-        async function captureFrame() {
-            ctx.drawImage(
-                video, 0, 0, canvas.width, canvas.height
-            );
-
-            const blob = await new Promise(resolve => {
-                canvas.toBlob(
-                    resolve, "image/jpeg", 0.8
-                );
-            });
-
-            if (!blob) return;
-
-            const formData = new FormData();
-
-            formData.append(
-                "image", blob, "frame.jpg"
-            );
-
-            const response = await fetch(apiRoute, {
-                method: "POST",
-                body: formData
-            });
-
-            if (!response.ok) {
-                console.error("Backend error");
-                return;
-            }
-
-            const data = await response.json();
-            console.log(data);
-            updateHands(data);
-        }
-
-        function updateHands(data) {
-            left1.classList.remove("active-finger");
-            right1.classList.remove("active-finger");
-
-            if (data.left > 0) {
-                left1.classList.add("active-finger");
-            }
-            if (data.right > 0) {
-                right1.classList.add("active-finger");
-            }
-        }
-
-        turnOnCamera();
-    </script>
-}
-
-<!-- active finger -->
-<!-- <div class="rounded-circle bg-primary border border-primary-subtle border-5" style="width: 80px; height: 80px;" id="left-2"></div> -->
