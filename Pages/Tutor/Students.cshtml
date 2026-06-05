@@ -1,0 +1,146 @@
+﻿@page
+@model FigurasQE_WebClient.Pages.Tutor.StudentsModel
+@{
+    ViewData["Title"] = "Mis Estudiantes";
+    Layout = "_LayoutNoHeader";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+@if (Model.Students.Count == 0)
+{
+    <div class="alert alert-info text-center">
+        Aún no tienes estudiantes asignados.
+    </div>
+}
+else
+{
+    <div class="students-grid">
+
+        @foreach (var student in Model.Students)
+        {
+            <a
+                asp-page="/Tutor/StudentDetails"
+                asp-route-id="@student.IdStudent"
+                class="student-card text-decoration-none">
+
+                <h4>@student.Name</h4>
+
+                <p class="mb-0">
+                    @student.Neurodivergency?.ToUpper()
+                </p>
+
+            </a>
+        }
+
+    </div>
+}
+
+<button
+    class="btn btn-success mt-4 mb-4"
+    data-bs-toggle="modal"
+    data-bs-target="#inviteModal">
+    Agregar Estudiante
+</button>
+
+<a asp-page="/Tutor/Home"
+    class="btn btn-secondary">
+    Volver
+</a>
+
+<!-- MODAL -->
+
+<div class="modal fade" id="inviteModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <form method="post" asp-page-handler="AssignStudent">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Asignar estudiante
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <label class="form-label">
+                        Correo del estudiante
+                    </label>
+
+                    <input
+                        asp-for="StudentEmail"
+                        class="form-control"
+                        placeholder="correo@ejemplo.com" />
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success">
+                        Aceptar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+    body {
+        background-image: url('/img/BackgroundStatistics.png');
+        background-size: cover;
+        background-position: center;
+        margin-bottom: 60px;
+    }
+
+    .students-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .student-card {
+        background-color: #f8f9fa;
+
+        border-radius: 1rem;
+
+        padding: 1rem;
+
+        transition: 0.2s ease;
+
+        color: black;
+
+        border: 2px solid transparent;
+    }
+
+    .student-card:hover {
+        transform: translateY(-4px);
+
+        border-color: #0d6efd;
+
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+</style>
