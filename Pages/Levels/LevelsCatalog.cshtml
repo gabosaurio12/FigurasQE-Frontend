@@ -9,10 +9,17 @@
     <a asp-page="/Index" class="link-dark display-4 link-offset-2 link-underline link-underline-opacity-0" ">Figuras Que Enseñan</a>
 </div>
 
+@if (!string.IsNullOrEmpty(Model.WarningMessage))
+{
+    <div class="alert alert-warning">
+        @Model.WarningMessage
+    </div>
+}
+
 <h1 class="mb-4">@ViewData["Title"]</h1>
 
-<div class="grid-container">
-    <a asp-page="/Levels/Level1/Level1" class="cell btn btn-dark">
+<div class="grid-container mb-4">
+    <a asp-page="/Levels/Level1/Level1" class="cell btn btn-dark" action="POST ">
         Nivel 1
     </a>
     <a asp-page="/Levels/Level2/Level2" class="cell btn btn-primary">
@@ -21,7 +28,7 @@
     <a asp-page="/Levels/Level3/Level3" class="cell btn btn-success">
         Nivel 3
     </a>
-    <a asp-page="/Levels/Level4/Level4" class="cell btn btn-info">
+    <a asp-page="/Levels/Level4/Level4" class="cell btn btn-light">
         Nivel 4
     </a>
     <a asp-page="/Levels/Level5/Level5" class="cell btn btn-warning">
@@ -32,7 +39,38 @@
     </a>
 </div>
 
+<form method="post" asp-page-handler="EndSession">
+    <button type="submit" class="btn btn-danger">
+        Terminar sesión
+    </button>
+</form>
+
+<!-- SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">¡Éxito!</h5>
+                <a asp-page="/Student/Home" class="btn-close btn-close-white"></a>
+            </div>
+
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <style>
+    body {
+        background-image: url('/img/BackgroundStatistics.png');
+        background-size: cover;
+        background-position: center;
+        margin-bottom: 60px;
+    }
+
     .grid-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -53,3 +91,18 @@
         transition: all 0.2s ease;
     }
 </style>
+
+@section Scripts {
+    @using System.Text.Json;
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const successMessage = @Html.Raw(JsonSerializer.Serialize(Model.SuccessMessage));
+            if (successMessage && successMessage.trim() !== "") {
+                document.getElementById("successMessage").textContent = successMessage;
+                new bootstrap.Modal(document.getElementById("successModal")).show();
+            }
+
+        });
+    </script>
+}
