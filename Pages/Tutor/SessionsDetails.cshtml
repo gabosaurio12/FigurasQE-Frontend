@@ -1,0 +1,169 @@
+@page "{id:int}"
+@model SessionsDetailsModel
+@{
+    ViewData["Title"] = "Sesiones del Estudiante";
+    Layout = "_LayoutNoHeader";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">@Model.Student?.Name</h2>
+            <small class="text-muted">Historial de sesiones</small>
+        </div>
+
+        <a asp-page="/Tutor/Students"
+           class="btn btn-secondary">
+            Volver
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body text-center">
+                    <h5>Sesiones</h5>
+                    <h3>@Model.Sessions.Count</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body text-center">
+                    <h5>Niveles jugados</h5>
+                    <h3>@Model.Sessions.Sum(s => s.LevelsPlayed)</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body text-center">
+                    <h5>Completados</h5>
+                    <h3>@Model.Sessions.Sum(s => s.LevelsCompleted)</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body text-center">
+                    <h5>Tiempo total</h5>
+                    <h3>@Model.Sessions.Sum(s => s.DurationMinutes) min</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="mb-3 d-flex gap-2 flex-wrap">
+        <button class="btn btn-outline-light btn-sm">Todas</button>
+        <button class="btn btn-outline-light btn-sm">Hoy</button>
+        <button class="btn btn-outline-light btn-sm">5 días</button>
+        <button class="btn btn-outline-light btn-sm">7 días</button>
+        <button class="btn btn-outline-light btn-sm">15 días</button>
+        <button class="btn btn-outline-light btn-sm">1 mes</button>
+        <button class="btn btn-outline-light btn-sm">2 meses</button>
+    </div>
+
+    <div class="row g-3">
+
+        @if (!Model.Sessions.Any())
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    Este estudiante aún no tiene sesiones registradas.
+                </div>
+            </div>
+        }
+        else
+        {
+            foreach (var s in Model.Sessions)
+            {
+                <div class="col-md-6">
+
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-body">
+
+                            <h5>Sesión #@s.IdSession</h5>
+
+                            <p class="text-muted mb-1">
+                                @s.BeginningDate?.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+
+                            <p class="mb-1">
+                                ⏱ @s.DurationMinutes min
+                            </p>
+
+                            <p class="mb-1">
+                                🎮 Niveles: @s.LevelsPlayed
+                            </p>
+
+                            <button class="btn btn-sm btn-primary mt-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#sessionModal"
+                                    onclick="openSession(@s.IdSession)">
+                                Ver detalles
+                            </button>
+
+                        </div>
+                    </div>
+
+                </div>
+            }
+        }
+
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="sessionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle de sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="sessionModalBody">
+                Cargando...
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @using System.Text.Json
+
+    <script>
+        const sessions = @Html.Raw(JsonSerializer.Serialize(Model.Sessions));
+
+        function openSession(id) {
+            const data = sessions.find(s => s.IdSession === id);
+            console.log(data);
+
+            document.getElementById("sessionModalBody").innerHTML = `
+                <p><b>Inicio:</b> ${data.BeginningDate}</p>
+                <p><b>Fin:</b> ${data.EndDate}</p>
+                <p><b>Duración:</b> ${data.DurationMinutes} min</p>
+                <p><b>Niveles jugados:</b> ${data.LevelsPlayed}</p>
+                <p><b>Completados:</b> ${data.LevelsCompleted}</p>
+                <p><b>Dispositivo:</b> ${data.Device}</p>
+            `;
+        }
+    </script>
+}
+
+<style>
+    body {
+        background-image: url('/img/BackgroundStatistics.png');
+        background-size: cover;
+        background-position: center;
+        margin-bottom: 60px;
+    }
+</style>

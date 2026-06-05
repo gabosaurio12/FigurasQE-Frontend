@@ -74,12 +74,7 @@ public class SignupModel : PageModel
 
         Input.Password = Password;
 
-        var json = System.Text.Json.JsonSerializer.Serialize(Input);
-        Console.WriteLine("INPUT JSON:");
-        Console.WriteLine(json);
-
         using var client = new HttpClient();
-
 
         var response = await client.PostAsJsonAsync(
             UserRoute,
