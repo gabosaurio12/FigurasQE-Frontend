@@ -36,7 +36,12 @@
      data-next-level="@Model.NextLevelRoute"
      data-total="@Model.Answer.Total"
      data-left="@Model.Answer.Left"
-     data-right="@Model.Answer.Right">
+     data-right="@Model.Answer.Right"
+     data-tries="@Model.Tries"
+     data-completed="@Model.Completed"
+     data-is-guest="@Model.IsGuest"
+     data-session-id="@Model.SessionId"
+     data-token="@User.FindFirst("jwt_token")?.Value">
 </div>
 
 <style>

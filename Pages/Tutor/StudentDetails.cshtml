@@ -18,35 +18,35 @@
     </div>
 
     <div class="card shadow-sm border-0 rounded-4 mb-4">
-        <div class="card-body p-4">
+        <div class="card shadow p-4" style="border-radius: 1rem;">
 
             <h3 class="mb-4">@Model.Student?.Name</h3>
 
             <div class="row g-4">
 
-                <div class="col-md-4">
+                <div class="card-body shadow col-md-4">
                     <label class="text-muted">Edad</label>
                     <div class="fs-5">@Model.Student?.Age años</div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="card-body shadow col-md-4">
                     <label class="text-muted">País</label>
                     <div class="fs-5">@Model.Student?.Country</div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="card-body shadow col-md-4">
                     <label class="text-muted">Género</label>
                     <div class="fs-5">@Model.Student?.Gender</div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="card-body shadow col-md-6">
                     <label class="text-muted">Neurodivergencia</label>
                     <div class="fs-5">
                         @(Model.Student?.Neurodivergency ?? "No especificada")
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="card-body shadow col-md-6">
                     <label class="text-muted">Correo</label>
                     <div class="fs-5">@Model.Student?.Email</div>
                 </div>
@@ -56,20 +56,20 @@
     </div>
 
     <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
+        <div class="card shadow p-4" style="border-radius: 1rem;">
 
             <h4 class="mb-4">Tutor</h4>
 
             <div class="row">
 
-                <div class="col-md-6">
+                <div class="card-body shadow col-md-6">
                     <label class="text-muted">Nombre</label>
                     <div class="fs-5">
                         @User.Identity?.Name
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="card-body shadow col-md-6">
                     <label class="text-muted">Email</label>
                     <div class="fs-5">
                         @User.Identity?.Name

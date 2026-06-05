@@ -1,14 +1,21 @@
 const apiRoute = "http://localhost:3000/hands";
+const levelResultsRoute = "http://localhost:3000/data/level-results";
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const counters = document.getElementById("counter-container");
 const config = document.getElementById("level-config");
+const beginningTime = Date.now();
 
 const nextLevelRoute = config.dataset.nextLevel;
 const expectedTotal = Number(config.dataset.total);
 const expectedLeft = Number(config.dataset.left);
 const expectedRight = Number(config.dataset.right);
+let tries = Number(config.dataset.tries);
+let completed = config.dataset.completed === "true";
+const isGuest = config.dataset.isGuest === "true"   ;
+const sessionId = Number(config.dataset.sessionId);
+const token = config.dataset.token;
 
 const countersArr = [];
 Array.from(counters.children).forEach(child => {
@@ -102,13 +109,12 @@ async function captureFrame() {
 
     const data = await response.json();
 
-    validateResult(data);
+    await validateResult(data);
 
-    console.log(data); //deletethisafter
     updateHands(data);
 }
 
-function validateResult(data) {
+async function validateResult(data) {
     if (data.total === expectedTotal) {
 
         if (data.left === expectedLeft && data.right === expectedRight) {
@@ -120,6 +126,7 @@ function validateResult(data) {
             const elapsed = Date.now() - resultStartTime;
 
             if (elapsed >= 1000) {
+                tries++;
                 countersArr[0].classList.add("active-counter");
             }
 
@@ -130,6 +137,10 @@ function validateResult(data) {
             if (elapsed >= 3000 && !actionTriggered) {
                 actionTriggered = true;
                 countersArr[2].classList.add("active-counter");
+                completed = true;
+                if (!isGuest) {
+                    await createLevelResult();
+                }
 
                 window.location.href = `/Levels/LevelComplete?nextLevel=${encodeURIComponent(nextLevelRoute)}`;
             }
@@ -164,12 +175,40 @@ function updateHands(data) {
     });
 
     for (let i = 0; i < data.left; i++) {
-        leftFingers[i].classList.add("active-finger");
+        if (leftFingers[i]) {
+            leftFingers[i].classList.add("active-finger");
+        }
     }
 
     for (let i = 0; i < data.right; i++) {
-        rightFingers[i].classList.add("active-finger");
+        if (rightFingers[i]) {
+            rightFingers[i].classList.add("active-finger");
+        }
     }
+}
+
+async function createLevelResult() {
+    console.log("holaaa");
+    const finishingTime = Date.now() - beginningTime;
+    const dto = {
+        idSession: sessionId,
+        idLevel: 1,
+        finishingTime: Math.floor(finishingTime),
+        attempts: Number(tries),
+        fails: Number(tries),
+        completed: Boolean(completed)
+    };
+
+    const response = await fetch(levelResultsRoute, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(dto)
+    });
+
+    const data = await response.json();
 }
 
 turnOnCamera();

@@ -16,4 +16,5 @@ public class SessionDto
     public int LevelsCompleted { get; set; }
 
     public int DurationMinutes { get; set; }
+    public List<LevelResultDto> LevelResults { get; set; } = [];
 }
