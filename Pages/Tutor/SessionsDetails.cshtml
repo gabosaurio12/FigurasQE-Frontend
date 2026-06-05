@@ -70,7 +70,7 @@
     </div>
 
     <div class="row g-3">
-
+        @using System.Linq;
         @if (!Model.Sessions.Any())
         {
             <div class="col-12">
@@ -83,6 +83,15 @@
         {
             foreach (var s in Model.Sessions)
             {
+                TimeSpan? diff = s.EndDate - s.BeginningDate;
+                s.DurationMinutes = (int)(diff?.TotalMinutes ?? 0);
+                s.LevelsPlayed = s.LevelResults.Count;
+                var results = s.LevelResults;
+                s.LevelsCompleted = results
+                    .Where(lr => lr.Completed == true)
+                    .ToList()
+                    .Count;
+
                 <div class="col-md-6">
 
                     <div class="card shadow-sm border-0 rounded-4 h-100">

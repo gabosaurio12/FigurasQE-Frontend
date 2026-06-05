@@ -9,6 +9,10 @@ public class Level1Model : PageModel
     public LevelAnswer Answer { get; private set; } = new LevelAnswer();
     public string NextLevelRoute { get; set; }
     public bool IsGuest { get; set; }
+    public int Tries { get; set; }
+    public bool Completed { get; set; } = false;
+    public int SessionId { get; set; }
+
     public void OnGet()
     {
         Answer.Left = 1;
@@ -16,6 +20,10 @@ public class Level1Model : PageModel
         Answer.Total = Answer.Left + Answer.Right;
         NextLevelRoute = "/Levels/Level2/Level2";
         IsGuest = !(User.Identity?.IsAuthenticated ?? false);
+        if (!IsGuest)
+        {
+            SessionId = HttpContext.Session.GetInt32("sessionId") ?? 0;
+        }
     }
 }
 
